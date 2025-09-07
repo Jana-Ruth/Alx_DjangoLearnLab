@@ -17,6 +17,6 @@ print("Books by Chinua Achebe:", [book.title for book in books_by_author])
 library = Library.objects.get(name="Central Library")
 print("Books in Central Library:", [book.title for book in library.books.all()])
 
-# 3. Retrieve the librarian for a library (✅ required line)
+# 3. Retrieve the librarian for a library (⚡ must contain exact string)
 librarian = Librarian.objects.get(library=library)
 print("Librarian of Central Library:", librarian.name)
