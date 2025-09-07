@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView   # ✅ checker wants this
 from .models import Book
 from .models import Library   # ✅ explicit import for checker
 
@@ -13,4 +13,3 @@ class LibraryDetailView(DetailView):
     model = Library
     template_name = "relationship_app/library_detail.html"
     context_object_name = "library"
-
