@@ -20,6 +20,6 @@ books_in_library = library.books.all()
 print(f"Books in {library_name}: {[book.title for book in books_in_library]}")
 
 # 3. Retrieve the librarian for a library
-library = Library.objects.get(library="library_name")
+library = Library.objects.get(name=library_name)
 librarian = library.librarian  # thanks to OneToOneField
 print(f"Librarian of {library_name}: {librarian.name}")
