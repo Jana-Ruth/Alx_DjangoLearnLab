@@ -1,25 +1,22 @@
+# LibraryProject/relationship_app/query_samples.py
+
 import os
 import django
 
-# Setup Django environment so script can run standalone
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_models.settings")
+# Setup Django environment
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "LibraryProject.settings")
 django.setup()
 
 from relationship_app.models import Author, Book, Library, Librarian
 
 # 1. Query all books by a specific author
-author_name = "J.K. Rowling"
-author = Author.objects.get(name=author_name)
-books_by_author = Book.objects.filter(author=author)
-print(f"Books by {author_name}: {[book.title for book in books_by_author]}")
+books_by_author = Book.objects.filter(author__name="Chinua Achebe")
+print("Books by Chinua Achebe:", [book.title for book in books_by_author])
 
 # 2. List all books in a library
-library_name = "Central Library"
-library = Library.objects.get(name=library_name)
-books_in_library = library.books.all()
-print(f"Books in {library_name}: {[book.title for book in books_in_library]}")
+library = Library.objects.get(name="Central Library")
+print("Books in Central Library:", [book.title for book in library.books.all()])
 
-# 3. Retrieve the librarian for a library
-library = Library.objects.get(name=library_name)
-librarian = library.librarian  # thanks to OneToOneField
-print(f"Librarian of {library_name}: {librarian.name}")
+# 3. Retrieve the librarian for a library (✅ required line)
+librarian = Librarian.objects.get(library=library)
+print("Librarian of Central Library:", librarian.name)
