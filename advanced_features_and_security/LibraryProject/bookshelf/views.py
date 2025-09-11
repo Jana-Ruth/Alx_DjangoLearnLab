@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from .models import Book
-from .forms import BookForm, SearchForm, ExampleForm
+from .forms import BookForm, SearchForm
+from .forms import ExampleForm
 from django.views.decorators.http import require_http_methods
 
 
