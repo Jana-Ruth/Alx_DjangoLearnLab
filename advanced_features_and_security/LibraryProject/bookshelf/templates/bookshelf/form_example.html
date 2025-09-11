@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Create Book</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+      <label for="{{ form.title.id_for_label }}">Title</label>
+      {{ form.title }}          {# Django auto-escapes widget values #}
+      {{ form.title.errors }}
+    </div>
+
+    <div>
+      <label for="{{ form.author.id_for_label }}">Author</label>
+      {{ form.author }}
+      {{ form.author.errors }}
+    </div>
+
+    <div>
+      <label for="{{ form.published_date.id_for_label }}">Published date</label>
+      {{ form.published_date }}
+      {{ form.published_date.errors }}
+    </div>
+
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}
