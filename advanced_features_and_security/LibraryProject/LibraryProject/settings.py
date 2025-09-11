@@ -3,4 +3,4 @@ INSTALLED_APPS = [
     "accounts",  # 👈 add this line
 ]
 
-AUTH_USER_MODEL = "accounts.CustomUser"
+AUTH_USER_MODEL = "bookshelf.CustomUser"
