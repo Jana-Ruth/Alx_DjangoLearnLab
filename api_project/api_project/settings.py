@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
      # Third-party apps
     'rest_framework',
-
+    'rest_framework.authtoken',   # ✅ add this line
 
 ]
 
