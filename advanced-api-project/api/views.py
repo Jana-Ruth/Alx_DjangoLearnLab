@@ -1,25 +1,54 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, mixins
 from .models import Book
 from .serializers import BookSerializer
-from .permissions import IsOwnerOrReadOnly  # your custom permission
+from .permissions import IsOwnerOrReadOnly
 
-# List + Create
-class BookListCreateView(generics.ListCreateAPIView):
+
+# List all books
+class ListView(generics.ListAPIView):
     """
     GET: List all books
-    POST: Create a new book (only for authenticated users)
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
-# Retrieve + Update + Delete
-class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+# Retrieve a single book
+class DetailView(generics.RetrieveAPIView):
     """
-    GET: Retrieve a book by ID
-    PUT/PATCH: Update book details (only for owner)
-    DELETE: Delete a book (only for owner)
+    GET: Retrieve a single book by ID
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.AllowAny]
+
+
+# Create a book
+class CreateView(generics.CreateAPIView):
+    """
+    POST: Create a new book (authenticated users only)
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+# Update a book
+class UpdateView(generics.UpdateAPIView):
+    """
+    PUT/PATCH: Update book details (only owner)
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
+
+# Delete a book
+class DeleteView(generics.DestroyAPIView):
+    """
+    DELETE: Delete a book (only owner)
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
