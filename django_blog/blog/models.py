@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from .models import Post  # if Post is defined in same file, remove this import
+from taggit.managers import TaggableManager
 
 class Profile(models.Model):
     """
@@ -45,7 +46,7 @@ class Post(models.Model):
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
+    tags = TaggableManager()
 
     class Meta:
         ordering = ['-published_date']

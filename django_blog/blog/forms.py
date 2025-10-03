@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Profile
 from .models import Post,Tag
 from .models import Comment
+from taggit.forms import TagWidget
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='Required.')
@@ -42,6 +43,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Post title', 'class': 'input'}),
             'content': forms.Textarea(attrs={'placeholder': 'Write your post...', 'class': 'textarea', 'rows': 8}),
+            'tags': TagWidget(),   # ✅ this is the key requirement
         }
     
     # Provide a single text field for tags (comma-separated)
