@@ -2,19 +2,18 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views import View
 
 from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
 
-# Registration view (function-based)
 def register(request):
+    """
+    Handle user registration. If successful, logs the user in and redirects to profile.
+    """
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Optionally log the user in immediately:
-            login(request, user)
+            login(request, user)  # optional: auto-login after registration
             messages.success(request, "Registration successful. Welcome!")
             return redirect('profile')
         else:
@@ -24,9 +23,11 @@ def register(request):
     return render(request, 'blog/register.html', {'form': form})
 
 
-# Profile view (view + edit)
 @login_required
 def profile(request):
+    """
+    View and edit user profile. Handles user and profile forms.
+    """
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
@@ -35,6 +36,8 @@ def profile(request):
             p_form.save()
             messages.success(request, "Your profile has been updated.")
             return redirect('profile')
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)

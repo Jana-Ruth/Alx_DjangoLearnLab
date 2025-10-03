@@ -10,24 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-
-
-
-
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-oqhnez8gvxg2snducw)wx+=%dll6e2^-yd$8z3kazp+!bk8&!c'
+SECRET_KEY = 'django-insecure-x3h7i7=p=7h%cqroki_rtlyperw#8o4!kv&xp&gat!n-5@wj2f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,17 +41,11 @@ INSTALLED_APPS = [
     'blog',
 ]
 
-
-
-STATIC_URL = '/static/'
-
-import os
-STATICFILES_DIRS = [BASE_DIR, 'blog/static']
-
+# Templates - ensure DIRS includes the top-level templates folder
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'blog/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # top-level templates folder
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,14 +58,19 @@ TEMPLATES = [
     },
 ]
 
+# Static + Media
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # for collectstatic
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Redirects after login/logout
+# Login/Logout redirects
 LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'login'
+
+# During development ensure DEBUG = True (already set normally)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -116,10 +109,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-        'USER': 'your_db_user',
-        'PASSWORD': 'your_db_password',
-        'HOST': 'localhost',   # or your database host
-        'PORT': '5432',        # default PostgreSQL port
     }
 }
 

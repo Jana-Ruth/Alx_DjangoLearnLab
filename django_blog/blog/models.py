@@ -3,31 +3,22 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
-class Post(models.Model):
+class Profile(models.Model):
     """
-    Post model for the blog.
-    Each post has a title, content, published date, and an author.
+    Profile extends the built-in User model with optional fields.
     """
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    published_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
-
     def __str__(self):
-        return self.title
-
-
-
-def __str__(self):
         return f"{self.user.username} Profile"
 
 @receiver(post_save, sender=User)
 def create_or_update_user_profile(sender, instance, created, **kwargs):
+    """
+    Ensure a Profile is created for every new User, and saved on User.save().
+    """
     if created:
         Profile.objects.create(user=instance)
     else:
