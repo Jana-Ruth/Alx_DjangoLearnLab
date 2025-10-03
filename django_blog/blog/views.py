@@ -12,7 +12,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from .models import Post, Comment, Tag
 from .forms import CommentForm
 from .forms import PostForm
-
+from django.db.models import Q
 from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
 
 def register(request):
@@ -150,6 +150,20 @@ class TagPostListView(ListView):
     def get_queryset(self):
         tag_name = self.kwargs.get('tag_name')
         return Post.objects.filter(tags__name__iexact=tag_name).distinct()
+    
+    def search_posts(request):
+        query = request.GET.get('q')  # the text from the search bar
+        results = []
+
+        if query:
+            results = Post.objects.filter(
+                Q(title__icontains=query) |            # ✅ check title
+                Q(content__icontains=query) |          # ✅ check content
+                Q(tags__name__icontains=query)         # ✅ check tags
+        ).distinct()
+
+        return render(request, 'blog/search_results.html', {'query': query, 'results': results})
+
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment

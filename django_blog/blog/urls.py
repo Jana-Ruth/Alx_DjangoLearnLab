@@ -26,4 +26,5 @@ urlpatterns = [
 # tags and search
     path('tags/<str:tag_name>/', TagPostListView.as_view(), name='posts-by-tag'),
     path('search/', PostListView.as_view(), name='search'),  # reuse list view to show search results
+    path('search/', views.search_posts, name='search_posts'),
 ]
