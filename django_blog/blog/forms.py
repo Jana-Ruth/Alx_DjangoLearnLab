@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Profile
-from .models import Post
+from .models import Post,Tag
 from .models import Comment
 
 class RegisterForm(UserCreationForm):
@@ -43,6 +43,30 @@ class PostForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'placeholder': 'Post title', 'class': 'input'}),
             'content': forms.Textarea(attrs={'placeholder': 'Write your post...', 'class': 'textarea', 'rows': 8}),
         }
+    
+    # Provide a single text field for tags (comma-separated)
+    tags_field = forms.CharField(
+        required=False,
+        label='Tags (comma-separated)',
+        widget=forms.TextInput(attrs={'placeholder': 'tag1, tag2, tag3'})
+    )    
+    
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags_field']
+
+    def __init__(self, *args, **kwargs):
+        # If editing an existing post, prefill tags_field
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['tags_field'].initial = ', '.join([t.name for t in self.instance.tags.all()])
+
+    def clean_tags_field(self):
+        value = self.cleaned_data.get('tags_field', '')
+        # normalize: split by comma and strip whitespace, drop empties
+        tags = [t.strip() for t in value.split(',') if t.strip()]
+        return tags    
+    
         
 class CommentForm(forms.ModelForm):
     content = forms.CharField(

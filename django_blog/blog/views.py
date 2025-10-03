@@ -9,8 +9,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
-
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import CommentForm
 from .forms import PostForm
 
@@ -65,6 +64,8 @@ class PostListView(ListView):
     template_name = 'blog/post_list.html'  # templates/blog/post_list.html
     context_object_name = 'posts'
     paginate_by = 10  # optional
+    
+    
 
 
 # Detail view: public
@@ -82,8 +83,15 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # set author before saving
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+         form.instance.author = self.request.user
+         tags = form.cleaned_data.get('tags_field', [])
+         response = super().form_valid(form)  # saves Post
+         # attach tags (create if needed)
+         for tag_name in tags:
+            tag_obj, _ = Tag.objects.get_or_create(name=tag_name)
+            self.object.tags.add(tag_obj)
+         return response
+        
 
 
 # Update view: only author can edit
@@ -91,6 +99,16 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_form.html'
+    
+    def form_valid(self, form):
+        tags = form.cleaned_data.get('tags_field', [])
+        response = super().form_valid(form)
+        # update tags: clear existing and set new ones
+        self.object.tags.clear()
+        for tag_name in tags:
+            tag_obj, _ = Tag.objects.get_or_create(name=tag_name)
+            self.object.tags.add(tag_obj)
+        return response
 
     def test_func(self):
         post = self.get_object()
@@ -122,6 +140,16 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return self.object.post.get_absolute_url()
 
+# View that lists posts by a tag (optional - helpful for /tags/<tag_name>/)
+class TagPostListView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+
+    def get_queryset(self):
+        tag_name = self.kwargs.get('tag_name')
+        return Post.objects.filter(tags__name__iexact=tag_name).distinct()
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
