@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 STATIC_URL = '/static/'
 
 import os
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'blog/static')]
+STATICFILES_DIRS = [BASE_DIR, 'blog/static']
 
 TEMPLATES = [
     {
