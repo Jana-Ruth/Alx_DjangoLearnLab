@@ -1,0 +1,14 @@
+Authentication system:
+- Register: /register/ (username, email, password)
+- Login: /login/ (Django built-in LoginView)
+- Logout: /logout/ (Django built-in LogoutView)
+- Profile: /profile/ (view/edit username, email, bio, avatar)
+
+How to run locally:
+1. python manage.py makemigrations
+2. python manage.py migrate
+3. python manage.py runserver
+
+Notes:
+- Forms use CSRF tokens.
+- Avatars saved to MEDIA_ROOT; ensure MEDIA_URL and MEDIA_ROOT set in settings.py.
