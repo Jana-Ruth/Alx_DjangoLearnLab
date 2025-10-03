@@ -1,19 +1,46 @@
 {% extends "blog/base.html" %}
-{% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 <article>
   <h1>{{ post.title }}</h1>
-  <p class="meta">By {{ post.author.username }} · {{ post.published_date|date:"Y-m-d H:i" }}</p>
-  <div class="post-body">
-    {{ post.content|linebreaks }}
-  </div>
-
-  {% if user == post.author %}
-    <p>
-      <a href="{% url 'post-update' post.pk %}">Edit</a> |
-      <a href="{% url 'post-delete' post.pk %}">Delete</a>
-    </p>
-  {% endif %}
-  <p><a href="{% url 'post-list' %}">Back to posts</a></p>
+  <p>{{ post.content|linebreaks }}</p>
+  <p class="meta">By {{ post.author.username }} · {{ post.published_date }}</p>
 </article>
+
+<hr>
+
+<section id="comments">
+  <h3>Comments ({{ post.comments.count }})</h3>
+
+  {% for comment in post.comments.all %}
+    <div class="comment">
+      <p class="meta">{{ comment.author.username }} · {{ comment.created_at|date:"Y-m-d H:i" }}</p>
+      <div class="content">{{ comment.content|linebreaks }}</div>
+
+      {% if user.is_authenticated and comment.author == user %}
+        <p class="comment-actions">
+          <a href="{% url 'comment-edit' comment.pk %}">Edit</a> |
+          <a href="{% url 'comment-delete' comment.pk %}">Delete</a>
+        </p>
+      {% endif %}
+    </div>
+    <hr>
+  {% empty %}
+    <p>No comments yet — be the first to comment!</p>
+  {% endfor %}
+</section>
+
+{% if user.is_authenticated %}
+  <section id="add-comment">
+    <h4>Leave a comment</h4>
+    <form action="{% url 'comment-create' post_pk=post.pk %}" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}   <!-- You'll pass a CommentForm named 'form' in context or rely on the CreateView template -->
+      <button type="submit">Post comment</button>
+    </form>
+  </section>
+{% else %}
+  <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
+{% endif %}
+
+<p><a href="{% url 'post-list' %}">Back to posts</a></p>
 {% endblock %}

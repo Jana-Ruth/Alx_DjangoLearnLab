@@ -1,0 +1,9 @@
+{% extends "blog/base.html" %}
+{% block content %}
+  <h2>{% if object %}Edit Comment{% else %}New Comment{% endif %}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if object %}Save{% else %}Post Comment{% endif %}</button>
+  </form>
+{% endblock %}

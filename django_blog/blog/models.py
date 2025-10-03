@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from .models import Post  # if Post is defined in same file, remove this import
 
 class Profile(models.Model):
     """
@@ -48,3 +49,27 @@ class Post(models.Model):
     def get_absolute_url(self):
         # After create/update, reverse to detail view
         return reverse('post-detail', kwargs={'pk': self.pk})
+    
+class Comment(models.Model):
+    """
+    Comment on a Post.
+    - post: the post this comment belongs to
+    - author: the user who wrote the comment
+    - content: the comment body
+    - created_at, updated_at: timestamps
+    """
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.post}'
+
+    def get_absolute_url(self):
+        # After edit/delete, redirect to the post detail
+        return reverse('post-detail', kwargs={'pk': self.post.pk})    
